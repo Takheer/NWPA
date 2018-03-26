@@ -1,12 +1,12 @@
 #' nwpa package provides pairwise alignment for two nucleotide
 #' sequences. It also can help you to parse .fas file into a matrix of strings
-#'
+#' 
 #'
 #' @name nwpa
 #' @docType package
 
 
-#' This is a function for parsing .fas file into a matrix.
+#' This function is for parsing .fas file into a matrix.
 #' It returns a matrix with two columns: label and sequence.
 #' 
 #' @export
@@ -41,7 +41,11 @@ read.fas <- function(text) {
   return(result)
 }
 
+#' Used for writing aligned sequences into .fas file
 #' 
+#' @export
+#' @param aligned a matrix of sequences in format "label - sequence"
+#' @param file output file in .fas format
 write.fas <- function(aligned, file){
   result <- ""
   for (i in c(1:2)){
@@ -60,17 +64,63 @@ write.fas <- function(aligned, file){
 }
 
 
-#' Calculates similarity score. 
+#' Calculates similarity score. It supports gapped alignments (The gap 
+#' character will just always count as "not a match") and sequences with 
+#' ambiguous base count
 #' 
 #' @param char.a first nucleotide for evaluation
 #' @param char.b second nucleotide for evaluation
-#' 
+#' @param mismatch used to evaluate a cell of similarity matrix in case of 
+#' matching of two nucleotides
+#' @param gap used to evaluate a cell of similarity matrix in case when you
+#' should add a gap to your alignment
 score <- function(char.a=" ", char.b=" ", match, mismatch) {
-  result <- ifelse(char.a == char.b, match, mismatch)
+  # I believe I can do it in not such a bad way
+  vec <- function(c="") {
+    if(c == "A"){
+      return(c("A"))
+    } else if(c == "C"){
+      return(c("C"))
+    } else if(c == "G"){
+      return(c("G"))
+    } else if(c == "T" | c == "U"){
+      return(c("T"))
+    } else if(c == "N"){
+      return(c("A", "C", "G", "T"))
+    } else if(c == "R"){
+      return(c("A", "G"))
+    } else if(c == "Y"){
+      return(c("C","T"))
+    } else if(c == "S"){
+      return(c("C", "G"))
+    } else if(c == "W"){
+      return(c("A", "T"))
+    } else if(c == "K"){
+      return(c("G", "T"))
+    } else if(c == "M"){
+      return(c("A", "C"))
+    } else if(c == "B"){
+      return(c("C", "G", "T"))
+    } else if(c == "D"){
+      return(c("A", "G", "T"))
+    } else if(c == "H"){
+      return(c("A", "C", "T"))
+    } else if(c == "V"){
+      return(c("A", "C", "G"))
+    }
+  }
+
+  if(char.a == "-" | char.b == "-" | char.a == "." | char.b == ".") {
+    result <- mismatch
+  } else {
+    v1 <- vec(char.a)
+    v2 <- vec(char.b)
+    result <- ifelse(length(intersect(v1, v2)) == 0, mismatch, match)
+  }
   return(result)
 }
 
-#' This function is used to calculate matrix finding best-scoring alignment
+#' This function is used to calculate matrix for finding best-scoring alignment
 #' 
 #' @param first a sequence to align
 #' @param second another sequence
