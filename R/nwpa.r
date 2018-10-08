@@ -231,12 +231,14 @@ align <- function(input, output, match=1, mismatch=0, gap=-1){
     j <- j - 1
   }
 
-  # TODO: write these sequences in a file
   cat(stringr::str_c("\n\nMaximum score: ", grid[stringr::str_length(seq.a), stringr::str_length(seq.b)], "\n\n\n"))
-  r1=matrix(c(sequences[1,1], alignment.a), nrow=1, ncol=2)
-  r2=matrix(c(sequences[2,1], alignment.b), nrow=1, ncol=2)
-  result = rbind(r1, r2)
+  r1 <- matrix(c(sequences[1,1], alignment.a), nrow=1, ncol=2)
+  r2 <- matrix(c(sequences[2,1], alignment.b), nrow=1, ncol=2)
+  result <- rbind(r1, r2)
   write.fas(result, output)
-  cat(stringr::str_c("Aligned sequences have been written to ", getwd(), "/", output))
+  if(output != 0){
+    cat(stringr::str_c("Aligned sequences have been written to ", getwd(), "/", output))
+  }
+  system(paste("open ", output))
 }
 NULL
