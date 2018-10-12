@@ -14,4 +14,4 @@ Default settings are <code>1</code> for <code>match</code>, <code>0</code> for <
 
 You can also set your own values:
 
-<code>align("sequences.fas", "alignedsequences.fas", match=0, mismatch=-2, gap=-1)</code>
+<code>align("example_1.fas", "alignedSequences.fas", match=0, mismatch=-2, gap=-1)</code>
